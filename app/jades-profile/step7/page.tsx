@@ -21,11 +21,19 @@ export default function JadeStep7() {
     router.push("/jades-profile/step6");
   }
 
+  // After a successful submit, send the user home.
+  // router.replace (not push) REPLACES step7 in the browser history, so
+  // pressing Back cannot return them to the already-submitted form.
+  function onSuccess() {
+    router.replace("/");
+  }
+
   return (
     <JadePage7
       prevPage={prevPage}
       updateSection={updateSection}
       formData={formData}
+      onSuccess={onSuccess}
     />
   );
 }
