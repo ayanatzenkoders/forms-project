@@ -1,7 +1,23 @@
-export default function Page1() {
-  return (
-    <>
-      <h1>Hello!</h1>
-    </>
-  );
+/*
+ * ── PARKED ROUTE (unfinished feature) ───────────────────────────────────────
+ * Next.js requires every page.tsx / layout.tsx to export a default component.
+ * A fully commented-out file exports NOTHING, so the build fails with
+ * "is not a module" — that is why commenting alone was not enough.
+ *
+ * This placeholder keeps the build green. Your real code is preserved below,
+ * exactly as you left it.
+ *
+ * TO RESUME: uncomment your code below, then delete this placeholder.
+ * ───────────────────────────────────────────────────────────────────────────
+ */
+export default function ParkedPage() {
+  return null;
 }
+
+// export default function Page1() {
+//   return (
+//     <>
+//       <h1>Hello!</h1>
+//     </>
+//   );
+// }

@@ -9,12 +9,12 @@ export default function Home() {
         <li>
           <Link href="/jades-profile">Jades</Link>
         </li>
-        <li>
+        {/* <li>
           <Link href="/milcoach-profile">MilCoach</Link>
         </li>
         <li>
           <Link href="/practioner-profile">Practioner</Link>
-        </li>
+        </li> */}
       </ul>
     </div>
   );

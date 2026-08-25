@@ -1,5 +1,5 @@
 "use client";
-import { usePractioner } from "@/context/PractitionerContext";
+// import { usePractioner } from "@/context/PractitionerContext";
 
 const Issues = [
   "Head and Neck Issues",
