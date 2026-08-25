@@ -1,0 +1,35 @@
+"use client";
+
+import { JadeProvider, useJade } from "@/context/JadeContext";
+import ProgressBar from "@/components/jade/ProgressBar";
+
+// Sits INSIDE the provider so it can read `hydrated`. Until the saved draft has
+// been read from localStorage we render nothing (a tiny loading line). This is
+// what lets every step page trust that formData is already filled on first
+// render — so we no longer need the reset() effects that patched it afterwards.
+function JadeGate({ children }: { children: React.ReactNode }) {
+  const { hydrated } = useJade();
+
+  if (!hydrated) {
+    return <p className="text-center p-8 text-gray-400">Loading…</p>;
+  }
+
+  return (
+    <div className="p-4">
+      <ProgressBar />
+      {children}
+    </div>
+  );
+}
+
+export default function JadeLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <JadeProvider>
+      <JadeGate>{children}</JadeGate>
+    </JadeProvider>
+  );
+}
