@@ -2,6 +2,7 @@
 
 import { JadeProvider, useJade } from "@/context/JadeContext";
 import ProgressBar from "@/components/jade/ProgressBar";
+import JadeLogo from "@/components/ui/Logo";
 
 // Sits INSIDE the provider so it can read `hydrated`. Until the saved draft has
 // been read from localStorage we render nothing (a tiny loading line). This is
@@ -15,8 +16,13 @@ function JadeGate({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="p-4">
-      <ProgressBar />
+    // The progress bar sits above the form shell. No page padding here: each
+    // step's FormShell is full-bleed so the mountain footer can reach the edges.
+    <div className="bg-white min-h-screen flex flex-col">
+      <div className="px-4 pt-4">
+        <JadeLogo />
+        <ProgressBar />
+      </div>
       {children}
     </div>
   );

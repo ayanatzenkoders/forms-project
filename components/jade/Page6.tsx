@@ -4,6 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { JadeFormData, UpdateSection } from "./types";
 import { form6Schema, Form6Values } from "./schemas";
+import FormShell from "@/components/ui/FormShell";
+import FormActions from "@/components/ui/FormActions";
+import SectionLabel from "@/components/ui/SectionLabel";
+import TextField from "@/components/ui/TextField";
 
 interface Props {
   prevPage: () => void;
@@ -36,63 +40,28 @@ export default function JadePage6({
   };
 
   return (
-    <div className="max-w-lg mx-auto p-6 border rounded-lg bg-white shadow-sm space-y-4">
-      <h2 className="text-xl font-bold text-center text-gray-800">
-        Your Available Timings
-      </h2>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormShell
+        title="Your Available Timings"
+        actions={<FormActions onBack={prevPage} nextLabel="Next" />}
+      >
+        <SectionLabel>Working hours</SectionLabel>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Start Time Field */}
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            Start Time
-          </label>
-          <input
+        <div className="grid grid-cols-2 gap-3">
+          <TextField
+            label="Start Time"
             type="time"
+            error={errors.startTime?.message}
             {...register("startTime")}
-            className="w-full p-2.5 border rounded bg-gray-50 focus:bg-white text-gray-800"
           />
-          {errors.startTime && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.startTime.message}
-            </p>
-          )}
-        </div>
-
-        {/* End Time Field */}
-        <div>
-          <label className="block text-sm font-medium mb-1 text-gray-700">
-            End Time
-          </label>
-          <input
+          <TextField
+            label="End Time"
             type="time"
+            error={errors.endTime?.message}
             {...register("endTime")}
-            className="w-full p-2.5 border rounded bg-gray-50 focus:bg-white text-gray-800"
           />
-          {errors.endTime && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.endTime.message}
-            </p>
-          )}
         </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-between pt-2">
-          <button
-            type="button"
-            onClick={prevPage}
-            className="px-4 py-2 border border-gray-400 rounded text-gray-700 hover:bg-gray-100"
-          >
-            Back
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Next
-          </button>
-        </div>
-      </form>
-    </div>
+      </FormShell>
+    </form>
   );
 }

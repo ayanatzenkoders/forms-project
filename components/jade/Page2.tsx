@@ -5,6 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { JadeFormData, UpdateSection } from "./types";
 import { form2Schema, Form2Values } from "./schemas";
 import FileUpload from "./FileUpload";
+import FormShell from "@/components/ui/FormShell";
+import FormActions from "@/components/ui/FormActions";
+import SectionLabel from "@/components/ui/SectionLabel";
+import TextField from "@/components/ui/TextField";
 
 interface Props {
   nextPage: () => void;
@@ -12,7 +16,7 @@ interface Props {
   //   keyType = Keyof Object; // extracts the properties. If object is defined as:
   //   interface User {
   //   id: number;
-  //   name: string;F
+  //   name: string;
   //   email: string;
   // }
   // Then The value of: keyType = "id" | "name" | "email"
@@ -56,105 +60,57 @@ export default function JadePage2({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4 max-w-lg mx-auto p-4"
-    >
-      <h2>Education Information</h2>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormShell
+        title="Education Information"
+        actions={<FormActions onBack={prevPage} nextLabel="Next" />}
+      >
+        <SectionLabel>Education details</SectionLabel>
 
-      {/* Institute Name */}
-      <div>
-        <label className="block text-sm font-medium">Institute Name</label>
-        <input
-          type="text"
+        <TextField
+          label="Institute Name"
+          error={errors.instituteName?.message}
           {...register("instituteName")}
-          className="border p-2 w-full"
         />
-        {errors.instituteName && (
-          <p className="text-red-500 text-xs">{errors.instituteName.message}</p>
-        )}
-      </div>
 
-      {/* Degree */}
-      <div>
-        <label className="block text-sm font-medium">Degree</label>
-        <input
-          type="text"
+        <TextField
+          label="Degree"
+          error={errors.degree?.message}
           {...register("degree")}
-          className="border p-2 w-full"
         />
-        {errors.degree && (
-          <p className="text-red-500 text-xs">{errors.degree.message}</p>
-        )}
-      </div>
 
-      {/* Field of Study */}
-      <div>
-        <label className="block text-sm font-medium">Field of Study</label>
-        <input
-          type="text"
+        <TextField
+          label="Field Of Study"
+          error={errors.fieldOfStudy?.message}
           {...register("fieldOfStudy")}
-          className="border p-2 w-full"
         />
-        {errors.fieldOfStudy && (
-          <p className="text-red-500 text-xs">{errors.fieldOfStudy.message}</p>
-        )}
-      </div>
 
-      {/* Dates */}
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <label className="block text-sm font-medium">Start Date</label>
-          <input
+        {/* Two dates share a row, matching the design's paired fields */}
+        <div className="grid grid-cols-2 gap-3">
+          <TextField
+            label="Start Date"
             type="date"
+            error={errors.startDate?.message}
             {...register("startDate")}
-            className="border p-2 w-full"
           />
-          {errors.startDate && (
-            <p className="text-red-500 text-xs">{errors.startDate.message}</p>
-          )}
-        </div>
-        <div>
-          <label className="block text-sm font-medium">End Date</label>
-          <input
+          <TextField
+            label="End Date"
             type="date"
+            error={errors.endDate?.message}
             {...register("endDate")}
-            className="border p-2 w-full"
           />
-          {errors.endDate && (
-            <p className="text-red-500 text-xs">{errors.endDate.message}</p>
-          )}
         </div>
-      </div>
 
-      {/* Upload Certificate */}
-      <div>
         <FileUpload
-          label="Upload Certificate"
+          label="Upload Your Certificate"
           folder="education-certificates"
           accept=".pdf,image/*"
+          hint="(JPG, PNG, or PDF)"
           value={watch("certificatePath")}
           error={errors.certificatePath?.message}
           onUploaded={handleUploaded}
         />
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex justify-between">
-        <button
-          type="button"
-          onClick={prevPage}
-          className="bg-gray-500 text-white px-4 py-2 rounded"
-        >
-          Back
-        </button>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Next
-        </button>
-      </div>
+      </FormShell>
     </form>
   );
 }

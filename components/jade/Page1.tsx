@@ -7,6 +7,12 @@ import { JadeFormData, UpdateSection } from "./types";
 import { form1Schema, Form1Values } from "./schemas";
 import { getJadeCategories, createJadeCategory } from "@/app/actions/jade";
 import FileUpload from "./FileUpload";
+import FormShell from "@/components/ui/FormShell";
+import FormActions from "@/components/ui/FormActions";
+import SectionLabel from "@/components/ui/SectionLabel";
+import TextField from "@/components/ui/TextField";
+import SelectField from "@/components/ui/SelectField";
+import TextAreaField from "@/components/ui/TextAreaField";
 
 interface Props {
   nextPage: () => void;
@@ -29,6 +35,8 @@ export default function JadePage1({
   const [loadingHobbies, setLoadingHobbies] = useState(true);
   const [newHobby, setNewHobby] = useState("");
   const [addingHobby, setAddingHobby] = useState(false);
+  // Toggles the little "type a new hobby" row opened by the + button.
+  const [showAddHobby, setShowAddHobby] = useState(false);
 
   useEffect(() => {
     async function loadHobbies() {
@@ -44,24 +52,6 @@ export default function JadePage1({
 
     loadHobbies();
   }, []);
-
-  async function handleAddHobby() {
-    if (!newHobby.trim()) return;
-
-    try {
-      setAddingHobby(true);
-
-      const newCategory = await createJadeCategory(newHobby.trim());
-
-      setHobbies((prev) => [...prev, newCategory]);
-
-      setNewHobby("");
-    } catch (error) {
-      console.error("Failed to add hobby:", error);
-    } finally {
-      setAddingHobby(false);
-    }
-  }
 
   const {
     register,
@@ -82,6 +72,44 @@ export default function JadePage1({
     },
   });
 
+  // The currently chosen hobbies. watch() re-renders this component whenever
+  // the field changes, which is how the chips below stay in sync.
+  const selectedHobbies = watch("hobbies") ?? [];
+
+  function addHobby(name: string) {
+    if (!name || selectedHobbies.includes(name)) return;
+    setValue("hobbies", [...selectedHobbies, name], { shouldValidate: true });
+  }
+
+  function removeHobby(name: string) {
+    setValue(
+      "hobbies",
+      selectedHobbies.filter((h) => h !== name),
+      { shouldValidate: true },
+    );
+  }
+
+  // Creates a brand-new hobby category in the database, then selects it.
+  async function handleAddHobby() {
+    if (!newHobby.trim()) return;
+
+    try {
+      setAddingHobby(true);
+
+      const newCategory = await createJadeCategory(newHobby.trim());
+
+      setHobbies((prev) => [...prev, newCategory]);
+      addHobby(newCategory.name);
+
+      setNewHobby("");
+      setShowAddHobby(false);
+    } catch (error) {
+      console.error("Failed to add hobby:", error);
+    } finally {
+      setAddingHobby(false);
+    }
+  }
+
   // Called by <FileUpload> after a successful upload. We (1) store the returned
   // path string in the form, and (2) immediately persist the whole section to
   // localStorage — so if the user refreshes mid-page, the uploaded file's path
@@ -100,202 +128,183 @@ export default function JadePage1({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4 max-w-lg mx-auto p-4"
-    >
-      <h2>Personal Information</h2>
+    // The <form> wraps the shell so the Next button (type="submit") inside
+    // FormActions still submits, even though it sits outside the card.
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormShell
+        title="Personal Information"
+        actions={<FormActions nextLabel="Next" />}
+      >
+        <SectionLabel>Basic information</SectionLabel>
 
-      {/* Profile Image Upload */}
-      <FileUpload
-        label="Profile Image"
-        folder="profile-images"
-        accept="image/*"
-        value={watch("profileImagePath")}
-        error={errors.profileImagePath?.message}
-        onUploaded={(path) => handleUploaded("profileImagePath", path)}
-      />
-
-      {/* Age */}
-      <div>
-        <label className="block text-sm font-medium">Age</label>
-        <input
-          type="number"
-          step="1"
-          {...register("age", { valueAsNumber: true })}
-          className="border p-2 w-full"
+        <FileUpload
+          label="Upload Your Profile"
+          folder="profile-images"
+          accept="image/*"
+          hint="(JPG, PNG, or PDF)"
+          value={watch("profileImagePath")}
+          error={errors.profileImagePath?.message}
+          onUploaded={(path) => handleUploaded("profileImagePath", path)}
         />
-        {errors.age && (
-          <p className="text-red-500 text-xs">{errors.age.message}</p>
-        )}
-      </div>
 
-      {/* Gender Dropdown */}
-      <div>
-        <label className="block text-sm font-medium">Gender</label>
-        <select {...register("gender")} className="border p-2 w-full">
-          <option value="">Select Gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
-        {errors.gender && (
-          <p className="text-red-500 text-xs">{errors.gender.message}</p>
-        )}
-      </div>
-
-      {/* Religion */}
-      <div>
-        <label className="block text-sm font-medium">Religion</label>
-        <input
-          type="text"
-          {...register("religion")}
-          className="border p-2 w-full"
-        />
-        {errors.religion && (
-          <p className="text-red-500 text-xs">{errors.religion.message}</p>
-        )}
-      </div>
-
-      {/* Race */}
-      <div>
-        <label className="block text-sm font-medium">Race</label>
-        <input
-          type="text"
-          {...register("race")}
-          className="border p-2 w-full"
-        />
-        {errors.race && (
-          <p className="text-red-500 text-xs">{errors.race.message}</p>
-        )}
-      </div>
-
-      {/* Resume Upload */}
-      <FileUpload
-        label="Upload Resume"
-        folder="resumes"
-        accept=".pdf,.doc,.docx"
-        value={watch("resumePath")}
-        error={errors.resumePath?.message}
-        onUploaded={(path) => handleUploaded("resumePath", path)}
-      />
-
-      {/* Years of Experience */}
-      <div>
-        <label className="block text-sm font-medium">Years of Experience</label>
-        <input
-          type="number"
-          step="any"
-          {...register("yearsExperience", { valueAsNumber: true })}
-          className="border p-2 w-full"
-        />
-        {errors.yearsExperience && (
-          <p className="text-red-500 text-xs">
-            {errors.yearsExperience.message}
-          </p>
-        )}
-      </div>
-
-      {/* Favorite Quote */}
-      <div>
-        <label className="block text-sm font-medium">Favourite Quote</label>
-        <textarea
-          {...register("favouriteQuote")}
-          className="border p-2 w-full"
-        />
-        {errors.favouriteQuote && (
-          <p className="text-red-500 text-xs">
-            {errors.favouriteQuote.message}
-          </p>
-        )}
-      </div>
-
-      {/* Hobbies */}
-      <div>
-        <label className="block text-sm font-medium">Hobbies</label>
-
-        {/* Existing hobbies from Supabase */}
-        {loadingHobbies && (
-          <p className="text-xs text-gray-400 mt-2">Loading hobbies…</p>
-        )}
-        <div className="flex flex-wrap gap-4 mt-2">
-          {hobbies.map((hobby) => (
-            <label key={hobby.id} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                value={hobby.name}
-                {...register("hobbies")}
-              />
-
-              {hobby.name}
-            </label>
-          ))}
-        </div>
-
-        {errors.hobbies && (
-          <p className="text-red-500 text-xs">{errors.hobbies.message}</p>
-        )}
-
-        {/* Add New Hobby */}
-        <div className="flex gap-2 mt-3">
-          <input
-            type="text"
-            placeholder="Enter new hobby"
-            value={newHobby}
-            onChange={(e) => setNewHobby(e.target.value)}
-            className="border p-2 flex-1"
+        {/* Age + Gender share one row, as in the design */}
+        <div className="grid grid-cols-2 gap-3">
+          <TextField
+            label="Age"
+            type="number"
+            step="1"
+            error={errors.age?.message}
+            {...register("age", { valueAsNumber: true })}
           />
 
-          <button
-            type="button"
-            onClick={handleAddHobby}
-            disabled={addingHobby}
-            className="bg-green-600 text-white px-4 py-2 rounded"
+          <SelectField
+            label="Gender"
+            error={errors.gender?.message}
+            {...register("gender")}
           >
-            {addingHobby ? "Adding..." : "Add Hobby"}
-          </button>
+            <option value="">Select</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </SelectField>
         </div>
-      </div>
 
-      {/* Address Fields */}
-      <div>
-        <label className="block text-sm font-medium">Country</label>
-        <input
-          type="text"
+        <TextField
+          label="Religion"
+          error={errors.religion?.message}
+          {...register("religion")}
+        />
+
+        <TextField
+          label="Race"
+          error={errors.race?.message}
+          {...register("race")}
+        />
+
+        <FileUpload
+          label="Upload Your Resume"
+          folder="resumes"
+          accept=".pdf,.doc,.docx"
+          hint="(JPG, PNG, or PDF)"
+          value={watch("resumePath")}
+          error={errors.resumePath?.message}
+          onUploaded={(path) => handleUploaded("resumePath", path)}
+        />
+
+        <TextField
+          label="Years Of Experience"
+          type="number"
+          step="any"
+          error={errors.yearsExperience?.message}
+          {...register("yearsExperience", { valueAsNumber: true })}
+        />
+
+        <TextAreaField
+          label="Favourite Quote"
+          error={errors.favouriteQuote?.message}
+          {...register("favouriteQuote")}
+        />
+
+        {/* ---------- Hobbies: pick from the list, or add a new one ---------- */}
+        <div>
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              <SelectField
+                label="Hobbies"
+                value=""
+                disabled={loadingHobbies}
+                error={errors.hobbies?.message}
+                // Not registered with RHF: this dropdown is only a picker.
+                // Choosing an option pushes it into the real `hobbies` array.
+                onChange={(e) => addHobby(e.target.value)}
+              >
+                <option value="">
+                  {loadingHobbies ? "Loading…" : "Select a hobby"}
+                </option>
+                {hobbies
+                  .filter((h) => !selectedHobbies.includes(h.name))
+                  .map((h) => (
+                    <option key={h.id} value={h.name}>
+                      {h.name}
+                    </option>
+                  ))}
+              </SelectField>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowAddHobby((v) => !v)}
+              aria-label="Add a new hobby"
+              className="h-10 w-10 shrink-0 rounded-lg bg-[#F4F6F8] text-lg text-slate-600 transition hover:bg-[#EDF1F5]"
+            >
+              +
+            </button>
+          </div>
+
+          {showAddHobby && (
+            <div className="mt-2 flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter new hobby"
+                value={newHobby}
+                onChange={(e) => setNewHobby(e.target.value)}
+                className="flex-1 rounded-lg bg-[#F4F6F8] px-3 py-2 text-sm outline-none"
+              />
+              <button
+                type="button"
+                onClick={handleAddHobby}
+                disabled={addingHobby}
+                className="rounded-lg bg-[#0B2B5B] px-4 text-sm text-white disabled:opacity-50"
+              >
+                {addingHobby ? "Adding…" : "Add"}
+              </button>
+            </div>
+          )}
+
+          {/* Selected hobbies as removable chips */}
+          {selectedHobbies.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {selectedHobbies.map((name) => (
+                <span
+                  key={name}
+                  className="inline-flex items-center gap-1 rounded-md bg-[#E8F5FD] px-2 py-1 text-xs text-[#1B75BC]"
+                >
+                  {name}
+                  <button
+                    type="button"
+                    onClick={() => removeHobby(name)}
+                    aria-label={`Remove ${name}`}
+                    className="text-[#1B75BC]/70 hover:text-[#1B75BC]"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ---------- Address ---------- */}
+        <SectionLabel>Address Details</SectionLabel>
+
+        <TextField
+          label="Country"
+          error={errors.country?.message}
           {...register("country")}
-          className="border p-2 w-full"
         />
-        {errors.country && (
-          <p className="text-red-500 text-xs">{errors.country.message}</p>
-        )}
-      </div>
 
-      <div>
-        <label className="block text-sm font-medium">State</label>
-        <input
-          type="text"
+        <TextField
+          label="State"
+          error={errors.state?.message}
           {...register("state")}
-          className="border p-2 w-full"
         />
-        {errors.state && (
-          <p className="text-red-500 text-xs">{errors.state.message}</p>
-        )}
-      </div>
 
-      <div>
-        <label className="block text-sm font-medium">Address</label>
-        <textarea {...register("address")} className="border p-2 w-full" />
-        {errors.address && (
-          <p className="text-red-500 text-xs">{errors.address.message}</p>
-        )}
-      </div>
-
-      <button
-        type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        Next
-      </button>
+        <TextAreaField
+          label="Address"
+          error={errors.address?.message}
+          {...register("address")}
+        />
+      </FormShell>
     </form>
   );
 }

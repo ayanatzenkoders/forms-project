@@ -5,6 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { JadeFormData, UpdateSection } from "./types";
 import { form7Schema, Form7Values } from "./schemas";
 import { submitJadeForm } from "@/app/actions/jade";
+import FormShell from "@/components/ui/FormShell";
+import FormActions from "@/components/ui/FormActions";
+import SectionLabel from "@/components/ui/SectionLabel";
+import TextField from "@/components/ui/TextField";
+import SelectField from "@/components/ui/SelectField";
 
 interface Props {
   prevPage: () => void;
@@ -67,101 +72,56 @@ export default function JadePage7({
       alert("Something went wrong while submitting the form.");
     }
   };
+
   return (
-    <div className="max-w-lg mx-auto space-y-4">
-      {/* Note Banner */}
-      <div className="p-4 bg-gray-100 rounded-lg border border-gray-200 text-sm text-gray-700 flex items-start gap-2">
-        <span className="font-bold text-gray-800">ⓘ Note:</span>
-        <span>
-          We only collect the information necessary to process your payments.
-        </span>
-      </div>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormShell
+        title="Banking Details"
+        actions={
+          <FormActions
+            onBack={prevPage}
+            nextLabel="Submit"
+            isSubmitting={isSubmitting}
+          />
+        }
+      >
+        {/* Note banner */}
+        <div className="flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
+          <span className="font-semibold text-slate-800">ⓘ Note:</span>
+          <span>
+            We only collect the information necessary to process your payments.
+          </span>
+        </div>
 
-      {/* Main Form Container */}
-      <div className="p-6 border rounded-lg bg-white shadow-sm space-y-4">
-        <h2 className="text-xl font-bold text-center text-gray-800">
-          Banking Details
-        </h2>
+        <SectionLabel>Account information</SectionLabel>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Select Bank Dropdown */}
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Select Bank
-            </label>
-            <select
-              {...register("bankName")}
-              className="w-full p-2.5 border rounded bg-gray-50 focus:bg-white text-gray-800"
-            >
-              <option value="">Select Bank</option>
-              <option value="HBL">Habib Bank Limited (HBL)</option>
-              <option value="Meezan">Meezan Bank</option>
-              <option value="UBL">United Bank Limited (UBL)</option>
-              <option value="MCB">MCB Bank</option>
-              <option value="Standard Chartered">Standard Chartered</option>
-            </select>
-            {errors.bankName && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.bankName.message}
-              </p>
-            )}
-          </div>
+        <SelectField
+          label="Select Bank"
+          error={errors.bankName?.message}
+          {...register("bankName")}
+        >
+          <option value="">Select Bank</option>
+          <option value="HBL">Habib Bank Limited (HBL)</option>
+          <option value="Meezan">Meezan Bank</option>
+          <option value="UBL">United Bank Limited (UBL)</option>
+          <option value="MCB">MCB Bank</option>
+          <option value="Standard Chartered">Standard Chartered</option>
+        </SelectField>
 
-          {/* Account Title */}
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Account Title
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. John Doe"
-              {...register("accountTitle")}
-              className="w-full p-2.5 border rounded bg-gray-50 focus:bg-white text-gray-800"
-            />
-            {errors.accountTitle && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.accountTitle.message}
-              </p>
-            )}
-          </div>
+        <TextField
+          label="Account Title"
+          placeholder="e.g. John Doe"
+          error={errors.accountTitle?.message}
+          {...register("accountTitle")}
+        />
 
-          {/* Account Number / IBAN */}
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Account no / IBAN
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. PK00MEZN0001234567890123"
-              {...register("accountNumber")}
-              className="w-full p-2.5 border rounded bg-gray-50 focus:bg-white text-gray-800"
-            />
-            {errors.accountNumber && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.accountNumber.message}
-              </p>
-            )}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-between pt-2">
-            <button
-              type="button"
-              onClick={prevPage}
-              className="px-4 py-2 border border-gray-400 rounded text-gray-700 hover:bg-gray-100"
-            >
-              Back
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <TextField
+          label="Account no / IBAN"
+          placeholder="e.g. PK00MEZN0001234567890123"
+          error={errors.accountNumber?.message}
+          {...register("accountNumber")}
+        />
+      </FormShell>
+    </form>
   );
 }

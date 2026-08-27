@@ -17,6 +17,7 @@ interface Props {
   label: string;
   folder: string; // which Supabase sub-folder, e.g. "resumes"
   accept?: string; // browser hint for the file picker
+  hint?: string; // small grey text, e.g. "(JPG, PNG, or PDF)"
   value?: string; // the path already stored for this field (if any)
   error?: string; // validation message from the parent's Zod errors
   onUploaded: (path: string) => void; // parent stores the returned path string
@@ -26,6 +27,7 @@ export default function FileUpload({
   label,
   folder,
   accept,
+  hint = "(JPG, PNG, or PDF)",
   value,
   error,
   onUploaded,
@@ -67,24 +69,58 @@ export default function FileUpload({
 
   return (
     <div>
-      <label className="block text-sm font-medium mb-1">{label}</label>
-      <input type="file" accept={accept} onChange={handleChange} />
+      {/*
+       * The whole grey box is a <label>. Clicking a label activates its input,
+       * so we can visually hide the ugly default "Choose File" button
+       * (sr-only) while the entire area stays clickable — and keyboard users
+       * can still reach the real input.
+       */}
+      <label
+        className={`flex cursor-pointer items-center gap-3 rounded-lg bg-[#F4F6F8] px-3 py-3 ring-1 transition hover:bg-[#EDF1F5] ${
+          error ? "ring-red-400" : "ring-transparent"
+        }`}
+      >
+        {/* round upload icon */}
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-slate-500 shadow-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 16V4m0 0L7 9m5-5 5 5M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
 
-      {uploading && <p className="text-xs">Uploading…</p>}
+        <span className="min-w-0">
+          <span className="block text-xs text-slate-700">
+            <span className="font-semibold underline">{label}</span>
+            <span className="text-slate-500"> or drag and drop</span>
+          </span>
+          <span className="block text-[10px] text-slate-400">{hint}</span>
+        </span>
+
+        <input
+          type="file"
+          accept={accept}
+          onChange={handleChange}
+          className="sr-only"
+        />
+      </label>
+
+      {uploading && <p className="mt-1 text-xs text-slate-500">Uploading…</p>}
 
       {value && !uploading && (
-        <div className="text-xs mt-1">
+        <div className="mt-1 text-xs">
           <p className="text-green-600">✓ Uploaded</p>
           {/* Shows the stored file, since the file box itself always
               says "No file chosen" after a refresh. */}
-          <p className="text-gray-500 break-all">{storedFileName}</p>
-          <p className="text-gray-400">
-            Choose a file again to replace it.
-          </p>
+          <p className="break-all text-slate-500">{storedFileName}</p>
         </div>
       )}
 
-      {error && <p className="text-red-500 text-xs">{error}</p>}
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>
   );
 }
