@@ -1,23 +1,36 @@
-/*
- * ── PARKED ROUTE (unfinished feature) ───────────────────────────────────────
- * Next.js requires every page.tsx / layout.tsx to export a default component.
- * A fully commented-out file exports NOTHING, so the build fails with
- * "is not a module" — that is why commenting alone was not enough.
- *
- * This placeholder keeps the build green. Your real code is preserved below,
- * exactly as you left it.
- *
- * TO RESUME: uncomment your code below, then delete this placeholder.
- * ───────────────────────────────────────────────────────────────────────────
- */
-export default function ParkedPage() {
-  return null;
-}
+"use client";
 
-// export default function Page1() {
-//   return (
-//     <>
-//       <h1>Hello!</h1>
-//     </>
-//   );
-// }
+import { useRouter } from "next/navigation";
+import Page5 from "@/components/practitioner/Page5";
+import { usePractioner } from "@/context/PractitionerContext";
+import { useRequireSection } from "@/components/practitioner/useRequireSection";
+
+export default function PractitionerStep5() {
+  const { formData, updateSection } = usePractioner();
+  const router = useRouter();
+
+  // Guard: the previous step must be complete before this one can be opened.
+  const allowed = useRequireSection(
+    Object.keys(formData.cancerHistory).length > 0,
+    "/practioner-profile/step4",
+  );
+  if (!allowed) return null;
+
+  function nextPage() {
+    // Finished: replace (not push) so Back cannot return to the submitted form.
+    router.replace("/");
+  }
+
+  function prevPage() {
+    router.push("/practioner-profile/step4");
+  }
+
+  return (
+    <Page5
+      nextPage={nextPage}
+      prevPage={prevPage}
+      updateSection={updateSection}
+      formData={formData}
+    />
+  );
+}

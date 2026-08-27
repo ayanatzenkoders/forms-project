@@ -1,28 +1,29 @@
-/*
- * ── PARKED LAYOUT (unfinished feature) ──────────────────────────────────────
- * Next.js requires layout.tsx to export a default component that renders its
- * children. A fully commented-out file exports nothing and breaks the build.
- *
- * This placeholder just passes children through. Your real code is preserved
- * below, exactly as you left it.
- *
- * TO RESUME: uncomment your code below, then delete this placeholder.
- * ───────────────────────────────────────────────────────────────────────────
- */
-export default function ParkedLayout({
+"use client";
+
+import { PractionerProvider, usePractioner } from "@/context/PractitionerContext";
+
+// Sits INSIDE the provider so it can read `hydrated`. Until the saved draft has
+// been read from localStorage we render a loading line. That is what lets every
+// step trust that formData is already filled on its first render, so no page
+// needs a reset() effect to patch values in afterwards.
+function PractitionerGate({ children }: { children: React.ReactNode }) {
+  const { hydrated } = usePractioner();
+
+  if (!hydrated) {
+    return <p className="p-8 text-center text-gray-400">Loading…</p>;
+  }
+
+  return <>{children}</>;
+}
+
+export default function PractitionerLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <PractionerProvider>
+      <PractitionerGate>{children}</PractitionerGate>
+    </PractionerProvider>
+  );
 }
-
-// import { PractionerProvider } from "@/context/PractitionerContext";
-
-// export default function JadeLayout({
-//   children,
-// }: {
-//   children: React.ReactNode;
-// }) {
-//   return <PractionerProvider><{children}</PractionerProvider>;
-// }
