@@ -57,18 +57,17 @@ export default function JadePage4({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormShell
-        title="Select Specialization"
-        actions={<FormActions onBack={prevPage} nextLabel="Next" />}
-      >
-        <CheckboxGroup
-          label="Choose everything you specialise in"
-          options={SPECIALIZATIONS}
-          registration={register("specializations")}
-          error={errors.specializations?.message}
-        />
-      </FormShell>
-    </form>
+    <FormShell
+      onSubmit={handleSubmit(onSubmit)}
+      title="Select Specialization"
+      actions={<FormActions onBack={prevPage} nextLabel="Next" />}
+    >
+      <CheckboxGroup
+        label="Choose everything you specialise in"
+        options={SPECIALIZATIONS}
+        registration={register("specializations")}
+        error={errors.specializations?.message}
+      />
+    </FormShell>
   );
 }

@@ -74,54 +74,53 @@ export default function JadePage7({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormShell
-        title="Banking Details"
-        actions={
-          <FormActions
-            onBack={prevPage}
-            nextLabel="Submit"
-            isSubmitting={isSubmitting}
-          />
-        }
+    <FormShell
+      onSubmit={handleSubmit(onSubmit)}
+      title="Banking Details"
+      actions={
+        <FormActions
+          onBack={prevPage}
+          nextLabel="Submit"
+          isSubmitting={isSubmitting}
+        />
+      }
+    >
+      {/* Note banner */}
+      <div className="flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
+        <span className="font-semibold text-slate-800">ⓘ Note:</span>
+        <span>
+          We only collect the information necessary to process your payments.
+        </span>
+      </div>
+
+      <SectionLabel>Account information</SectionLabel>
+
+      <SelectField
+        label="Select Bank"
+        error={errors.bankName?.message}
+        {...register("bankName")}
       >
-        {/* Note banner */}
-        <div className="flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
-          <span className="font-semibold text-slate-800">ⓘ Note:</span>
-          <span>
-            We only collect the information necessary to process your payments.
-          </span>
-        </div>
+        <option value="">Select Bank</option>
+        <option value="HBL">Habib Bank Limited (HBL)</option>
+        <option value="Meezan">Meezan Bank</option>
+        <option value="UBL">United Bank Limited (UBL)</option>
+        <option value="MCB">MCB Bank</option>
+        <option value="Standard Chartered">Standard Chartered</option>
+      </SelectField>
 
-        <SectionLabel>Account information</SectionLabel>
+      <TextField
+        label="Account Title"
+        placeholder="e.g. John Doe"
+        error={errors.accountTitle?.message}
+        {...register("accountTitle")}
+      />
 
-        <SelectField
-          label="Select Bank"
-          error={errors.bankName?.message}
-          {...register("bankName")}
-        >
-          <option value="">Select Bank</option>
-          <option value="HBL">Habib Bank Limited (HBL)</option>
-          <option value="Meezan">Meezan Bank</option>
-          <option value="UBL">United Bank Limited (UBL)</option>
-          <option value="MCB">MCB Bank</option>
-          <option value="Standard Chartered">Standard Chartered</option>
-        </SelectField>
-
-        <TextField
-          label="Account Title"
-          placeholder="e.g. John Doe"
-          error={errors.accountTitle?.message}
-          {...register("accountTitle")}
-        />
-
-        <TextField
-          label="Account no / IBAN"
-          placeholder="e.g. PK00MEZN0001234567890123"
-          error={errors.accountNumber?.message}
-          {...register("accountNumber")}
-        />
-      </FormShell>
-    </form>
+      <TextField
+        label="Account no / IBAN"
+        placeholder="e.g. PK00MEZN0001234567890123"
+        error={errors.accountNumber?.message}
+        {...register("accountNumber")}
+      />
+    </FormShell>
   );
 }

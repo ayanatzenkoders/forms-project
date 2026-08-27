@@ -51,50 +51,49 @@ export default function JadePage3({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormShell
-        title="Professional Information"
-        actions={<FormActions onBack={prevPage} nextLabel="Next" />}
-      >
-        <SectionLabel>Experience details</SectionLabel>
+    <FormShell
+      onSubmit={handleSubmit(onSubmit)}
+      title="Professional Information"
+      actions={<FormActions onBack={prevPage} nextLabel="Next" />}
+    >
+      <SectionLabel>Experience details</SectionLabel>
 
+      <TextField
+        label="Company Name"
+        error={errors.companyName?.message}
+        {...register("companyName")}
+      />
+
+      <TextField
+        label="Job Title"
+        error={errors.jobTitle?.message}
+        {...register("jobTitle")}
+      />
+
+      <div className="grid grid-cols-2 gap-3">
         <TextField
-          label="Company Name"
-          error={errors.companyName?.message}
-          {...register("companyName")}
+          label="Start Date"
+          type="date"
+          error={errors.startDate?.message}
+          {...register("startDate")}
         />
-
         <TextField
-          label="Job Title"
-          error={errors.jobTitle?.message}
-          {...register("jobTitle")}
+          label="End Date"
+          type="date"
+          error={errors.endDate?.message}
+          {...register("endDate")}
         />
+      </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <TextField
-            label="Start Date"
-            type="date"
-            error={errors.startDate?.message}
-            {...register("startDate")}
-          />
-          <TextField
-            label="End Date"
-            type="date"
-            error={errors.endDate?.message}
-            {...register("endDate")}
-          />
-        </div>
-
-        <FileUpload
-          label="Upload Experience Certificate"
-          folder="experience-certificates"
-          accept=".pdf,image/*"
-          hint="(JPG, PNG, or PDF)"
-          value={watch("certificatePath")}
-          error={errors.certificatePath?.message}
-          onUploaded={handleUploaded}
-        />
-      </FormShell>
-    </form>
+      <FileUpload
+        label="Upload Experience Certificate"
+        folder="experience-certificates"
+        accept=".pdf,image/*"
+        hint="(JPG, PNG, or PDF)"
+        value={watch("certificatePath")}
+        error={errors.certificatePath?.message}
+        onUploaded={handleUploaded}
+      />
+    </FormShell>
   );
 }

@@ -18,7 +18,7 @@ function JadeGate({ children }: { children: React.ReactNode }) {
   return (
     // The progress bar sits above the form shell. No page padding here: each
     // step's FormShell is full-bleed so the mountain footer can reach the edges.
-    <div className="bg-white min-h-screen flex flex-col">
+    <div className="flex min-h-[100dvh] flex-col bg-white">
       <div className="px-4 pt-4">
         <JadeLogo />
         <ProgressBar />

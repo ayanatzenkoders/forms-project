@@ -60,57 +60,56 @@ export default function JadePage2({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormShell
-        title="Education Information"
-        actions={<FormActions onBack={prevPage} nextLabel="Next" />}
-      >
-        <SectionLabel>Education details</SectionLabel>
+    <FormShell
+      onSubmit={handleSubmit(onSubmit)}
+      title="Education Information"
+      actions={<FormActions onBack={prevPage} nextLabel="Next" />}
+    >
+      <SectionLabel>Education details</SectionLabel>
 
+      <TextField
+        label="Institute Name"
+        error={errors.instituteName?.message}
+        {...register("instituteName")}
+      />
+
+      <TextField
+        label="Degree"
+        error={errors.degree?.message}
+        {...register("degree")}
+      />
+
+      <TextField
+        label="Field Of Study"
+        error={errors.fieldOfStudy?.message}
+        {...register("fieldOfStudy")}
+      />
+
+      {/* Two dates share a row, matching the design's paired fields */}
+      <div className="grid grid-cols-2 gap-3">
         <TextField
-          label="Institute Name"
-          error={errors.instituteName?.message}
-          {...register("instituteName")}
+          label="Start Date"
+          type="date"
+          error={errors.startDate?.message}
+          {...register("startDate")}
         />
-
         <TextField
-          label="Degree"
-          error={errors.degree?.message}
-          {...register("degree")}
+          label="End Date"
+          type="date"
+          error={errors.endDate?.message}
+          {...register("endDate")}
         />
+      </div>
 
-        <TextField
-          label="Field Of Study"
-          error={errors.fieldOfStudy?.message}
-          {...register("fieldOfStudy")}
-        />
-
-        {/* Two dates share a row, matching the design's paired fields */}
-        <div className="grid grid-cols-2 gap-3">
-          <TextField
-            label="Start Date"
-            type="date"
-            error={errors.startDate?.message}
-            {...register("startDate")}
-          />
-          <TextField
-            label="End Date"
-            type="date"
-            error={errors.endDate?.message}
-            {...register("endDate")}
-          />
-        </div>
-
-        <FileUpload
-          label="Upload Your Certificate"
-          folder="education-certificates"
-          accept=".pdf,image/*"
-          hint="(JPG, PNG, or PDF)"
-          value={watch("certificatePath")}
-          error={errors.certificatePath?.message}
-          onUploaded={handleUploaded}
-        />
-      </FormShell>
-    </form>
+      <FileUpload
+        label="Upload Your Certificate"
+        folder="education-certificates"
+        accept=".pdf,image/*"
+        hint="(JPG, PNG, or PDF)"
+        value={watch("certificatePath")}
+        error={errors.certificatePath?.message}
+        onUploaded={handleUploaded}
+      />
+    </FormShell>
   );
 }

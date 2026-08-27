@@ -40,28 +40,27 @@ export default function JadePage6({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormShell
-        title="Your Available Timings"
-        actions={<FormActions onBack={prevPage} nextLabel="Next" />}
-      >
-        <SectionLabel>Working hours</SectionLabel>
+    <FormShell
+      onSubmit={handleSubmit(onSubmit)}
+      title="Your Available Timings"
+      actions={<FormActions onBack={prevPage} nextLabel="Next" />}
+    >
+      <SectionLabel>Working hours</SectionLabel>
 
-        <div className="grid grid-cols-2 gap-3">
-          <TextField
-            label="Start Time"
-            type="time"
-            error={errors.startTime?.message}
-            {...register("startTime")}
-          />
-          <TextField
-            label="End Time"
-            type="time"
-            error={errors.endTime?.message}
-            {...register("endTime")}
-          />
-        </div>
-      </FormShell>
-    </form>
+      <div className="grid grid-cols-2 gap-3">
+        <TextField
+          label="Start Time"
+          type="time"
+          error={errors.startTime?.message}
+          {...register("startTime")}
+        />
+        <TextField
+          label="End Time"
+          type="time"
+          error={errors.endTime?.message}
+          {...register("endTime")}
+        />
+      </div>
+    </FormShell>
   );
 }
